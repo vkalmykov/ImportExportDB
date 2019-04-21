@@ -1,6 +1,11 @@
 package com.geekbrains.entity;
 
-public class Employee {
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
+public class Employee implements Externalizable {
     private int id;
     private String name;
     private String position;
@@ -9,6 +14,7 @@ public class Employee {
     private AddInfo addInfo;
 
     public Employee() {
+        this(0, "", "", 0, 0.0f, null);
     }
 
     public Employee(int id, String name, String position, int age, float salary, AddInfo addInfo) {
@@ -66,5 +72,15 @@ public class Employee {
 
     public void setAddInfo(AddInfo addInfo) {
         this.addInfo = addInfo;
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+
     }
 }
