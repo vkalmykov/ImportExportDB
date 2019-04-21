@@ -99,7 +99,9 @@ public class BusinessDB implements AutoCloseable {
 
         } finally {
             try {
-                resultSet.close();
+                if (resultSet != null) {
+                    resultSet.close();
+                }
             } catch (SQLException e) {
 
             }
