@@ -1,16 +1,14 @@
 package com.geekbrains.entity;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 
-public class Employee implements Externalizable {
+public class Employee {
     private int id;
     private String name;
     private String position;
     private int age;
     private float salary;
+    @JacksonXmlElementWrapper(useWrapping = false)
     private AddInfo addInfo;
 
     public Employee() {
@@ -74,13 +72,4 @@ public class Employee implements Externalizable {
         this.addInfo = addInfo;
     }
 
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-
-    }
 }

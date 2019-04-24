@@ -13,7 +13,7 @@ public class BusinessDB implements AutoCloseable {
     private PreparedStatement insertEmployee;
     private PreparedStatement insertAddInfo;
     private PreparedStatement getAverageFromPosition;
-
+    private PreparedStatement findByPhoneNumber;
     public BusinessDB() throws ClassNotFoundException, SQLException {
         try {
             Class.forName("org.sqlite.JDBC");
@@ -26,6 +26,7 @@ public class BusinessDB implements AutoCloseable {
         insertEmployee = connection.prepareStatement("INSERT INTO employee (name, position, age, salary, addinfo.id) VALUES (?, ?, ?, ?, ?");
         insertAddInfo = connection.prepareStatement("INSERT INTO addinfo (phone_number, address) VALUES (?, ?)");
         getAverageFromPosition = connection.prepareStatement("SELECT AVG(salary) FROM (SELECT salary FROM employee WHERE position='?')");
+        findByPhoneNumber = connection.prepareStatement("select * from employee inner join (select id as addinfoid from addinfo where phone_number=?) on employee.\"addinfo.id\"=addinfoid");
     }
 
     public void close() {
@@ -58,7 +59,31 @@ public class BusinessDB implements AutoCloseable {
             throw new SQLException("Insert Fail");
         }
     }
-
+    public boolean insertEmploeyy(List<Employee> employees) throws SQLException {
+        //1? - name
+        //2? - position
+        //3? - age
+        //4? - salary
+        //5? - ref addinfo.id
+        try {
+            for (Employee employee : employees) {
+                insertEmployee.setString(1, employee.getName());
+                insertEmployee.setString(2, employee.getPosition());
+                insertEmployee.setInt(3, employee.getAge());
+                insertEmployee.setBigDecimal(4, BigDecimal.valueOf(employee.getSalary()));
+                if (employee.getAddInfo() == null) {
+                    insertEmployee.setNull(5, Types.INTEGER);
+                } else {
+                    insertEmployee.setInt(5, employee.getAddInfo().getId());
+                }
+                insertEmployee.addBatch();
+            }
+            insertEmployee.executeBatch();
+        } catch (SQLException e) {
+            throw new SQLException("Insert Fail");
+        }
+        return true;
+    }
     public boolean insertAddInfo(AddInfo addInfo) throws SQLException {
         //1? - phone_number
         //2? - address
@@ -138,5 +163,15 @@ public class BusinessDB implements AutoCloseable {
             resultSet.next();
             return resultSet.getBigDecimal(1).floatValue();
         }
+    }
+    public Employee findByPhoneNumber(String phoneNumber) throws SQLException {
+        Employee employee = null;
+        findByPhoneNumber.setString(1, phoneNumber);
+        try (ResultSet resultSet = findByPhoneNumber.executeQuery()){
+            resultSet.next();
+            employee = new Employee(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3),
+                    resultSet.getInt(4), resultSet.getBigDecimal(5).floatValue(), null);
+        }
+        return employee;
     }
 }
