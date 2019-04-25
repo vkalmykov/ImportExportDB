@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class MainClass {
+    /*
+        проект доделать не успел
+     */
     private static BusinessDB db;
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         final String help = "/exit - выйти из приложения\n/addEmployee имя должность зарплата возраст ид_поля_доп.информация - добавить работника\n" +
@@ -30,7 +33,7 @@ public class MainClass {
                         addInfo.setAddress(input[2]);
                         db.insertAddInfo(addInfo);
                     } catch (ArrayIndexOutOfBoundsException e) {
-                        System.out.println("Недостаточно аргументов");
+                        System.err.println("Недостаточно аргументов");
                     }
                 } else if (input[0].equalsIgnoreCase("/addEmployee")) {
                     Employee employee = new Employee();
@@ -42,7 +45,7 @@ public class MainClass {
                         employee.setAddInfo(new AddInfo(Integer.valueOf(input[5]),"", ""));
                         db.insertEmploeyy(employee);
                     } catch (ArrayIndexOutOfBoundsException e) {
-                        System.out.println("Недостаточно аргументов");
+                        System.err.println("Недостаточно аргументов");
                     }
                 } else if (input[0].equalsIgnoreCase("/showAllEmploeyy")) {
                     List<Employee> employeeList = db.getEmployee();
@@ -52,6 +55,20 @@ public class MainClass {
                             System.out.print(" " + employee.getAddInfo().getAddress() + " " + employee.getAddInfo().getPhoneNumber());
                         }
                         System.out.println();
+                    }
+                } else if (input[0].equalsIgnoreCase("/showAvgSalary")){
+                    System.out.println(db.getAvareageSalary());
+                } else if (input[0].equalsIgnoreCase("/showAvgSalaryByPos")) {
+                    try {
+                        System.out.println(db.getAvareageSalary(input[1]));
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        System.err.println("Аргумент не найден");
+                    }
+                } else if (input[0].equalsIgnoreCase("/findByPhoneNumber")) {
+                    try {
+                        System.out.println(db.findByPhoneNumber(input[1]));
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        System.err.println("Аргумент не найден");
                     }
                 }
                 input = scanner.nextLine().split(" ");
